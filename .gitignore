@@ -1,0 +1,17 @@
+__pycache__/*
+lib/__pycache__/*
+lib/__pycache__/
+__pycache__/
+*.log
+*.db
+*.sql
+*.geany
+emailenv
+temp.txt
+.idea/
+idea/*
+.vscode
+*.swp
+weatherkiosk/*.swp
+*.swo
+

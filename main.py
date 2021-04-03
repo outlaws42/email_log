@@ -1,10 +1,28 @@
-from tmod import open_yaml, open_file, open_log_file
-# from email.message import EmailMessage
-# from email.mime.text import MIMEText
-# import base64
-import schedule
-import smtplib
-import time
+from tmod import open_yaml, open_file, check_file_age, last_n_lines
+from schedule import run_pending
+from smtplib import SMTP
+from time import sleep
+from getpass import getuser
+
+version = '2021-04-03'
+username = getuser()
+
+def  call_funtion():
+  print(username)
+  if username == 'cara':
+    mail('Logs/net_backup.log', 30)
+    mail('Logs/backupUSB.log', 30)
+  elif username == 'troy':
+    mail('Logs/net_backup.log', 30)
+
+def file_age(filename, lines):
+  age =  check_file_age(filename)
+  print(f'file age {age} hours')
+  if age >= 24:
+    con = f"The log file {filename} for {username} is {age} hours old check backup"
+  else:
+    con = last_n_lines(filename, lines)
+  return con
 
 def login_info():
   ps = open_yaml('.cred.yaml', 'home')
@@ -13,26 +31,20 @@ def login_info():
     psw = value
   return [us,psw]
 
-def mail():
+def mail(filename, lines):
   us, psw = login_info()
   recipients = open_file('.rec', 'home').splitlines()
-
-  # log_file = open('/home/troy/Logs/net_backup.log', 'r')
-  # content = log_file.read()  # base64
-  # content = MIMEText(log_file.read())
-  # log_file.close()
-  content = open_log_file('net_backup.log', 'home')
+  content = file_age(filename, lines)
   print(content)
 
-  subject = 'Backup Log'
+  subject = f'Backup Log: for {username} (Log file: {filename})'
   message = f'Subject: {subject}\n\n{content}'
   try:
-    mail = smtplib.SMTP('smtp.gmail.com', 587)
+    mail = SMTP('smtp.gmail.com', 587)
     mail.ehlo()
     mail.starttls()
     mail.ehlo()
     mail.login(us, psw)
-    # mail.sendmail(us, recipients, content)
     mail.sendmail(us,recipients, message)
     mail.close()
     print('Successfully sent email')
@@ -41,12 +53,8 @@ def mail():
     print(e)
 
 
-# schedule.every(10).minutes.do(job)
-# schedule.every().hour.do(job)
-schedule.every().day.at("03:47").do(mail)
-# schedule.every().monday.do(job)
-# schedule.every().wednesday.at("13:15").do(job)
+schedule.every().day.at("07:26").do(call_funtion)
 
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+    run_pending()
+    sleep(1)

@@ -8,6 +8,7 @@ __pycache__/
 *.geany
 emailenv
 temp.txt
+temp.py
 .idea/
 idea/*
 .vscode

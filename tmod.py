@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-01'
+version = '2021-04-03'
 
 # Imports included with python
 import random
@@ -232,6 +232,20 @@ def reverse_sublist(self,list_):
         list_[i][:] = list_[i][::-1]
     return list_
     
+def last_n_lines(fname, lines):
+  """
+  Gets the last so many lines of a file 
+  and returns those lines in text.
+  Arguments = filename, number of lines
+  """
+  home = os.path.expanduser("~")
+  file_lines = []
+  with open(f'{home}/{fname}') as file:
+    for line in (file.readlines() [-lines:]):
+      file_lines.append(line)
+    file_lines_text = (''.join(file_lines))
+    return file_lines_text
+
 # Date/Time//////////////////////////////////////////////
 def day_diff(month,day,year):
     current = date.today()
@@ -286,3 +300,17 @@ def try_float(temp):
         temp = temp
     return temp
     
+# file information
+def check_file_age(fname):
+  """
+  Returns the difference of the current timestamp and the
+  timestamp of a file last write in hours 
+  Arguments = filename from home dir
+  Requires import os
+  """
+  home = os.path.expanduser("~")
+  file_info= os.stat(f'{home}/{fname}')
+  now = datetime.now().timestamp()
+  modified = int(file_info.st_atime)
+  difference_hour = int(((now - modified)/60)/60)
+  return difference_hour

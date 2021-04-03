@@ -1,5 +1,5 @@
 from tmod import open_yaml, open_file, check_file_age, last_n_lines
-from schedule import run_pending
+from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
@@ -53,7 +53,7 @@ def mail(filename, lines):
     print(e)
 
 
-schedule.every().day.at("07:26").do(call_funtion)
+every().day.at("07:41").do(call_funtion)
 
 while True:
     run_pending()

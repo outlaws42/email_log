@@ -1,8 +1,9 @@
-from tmod import open_yaml, open_file, check_file_age, last_n_lines
+from tmod import open_file, check_file_age, last_n_lines
 from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
+from os import environ
 
 version = '2021-04-03'
 username = getuser()
@@ -14,6 +15,8 @@ def  call_funtion():
     mail('Logs/backupUSB.log', 30)
   elif username == 'troy':
     mail('Logs/net_backup.log', 30)
+  else:
+    print('Unknown log file')
 
 def file_age(filename, lines):
   age =  check_file_age(filename)
@@ -24,15 +27,9 @@ def file_age(filename, lines):
     con = last_n_lines(filename, lines)
   return con
 
-def login_info():
-  ps = open_yaml('.cred.yaml', 'home')
-  for key, value in ps.items():
-    us = key
-    psw = value
-  return [us,psw]
-
 def mail(filename, lines):
-  us, psw = login_info()
+  us = environ.get('LOG_EMAIL')
+  psw = environ.get('LOG_EMAIL_PASS')
   recipients = open_file('.rec', 'home').splitlines()
   content = file_age(filename, lines)
   print(content)
@@ -53,7 +50,7 @@ def mail(filename, lines):
     print(e)
 
 
-every().day.at("07:41").do(call_funtion)
+every().day.at("04:19").do(call_funtion)
 
 while True:
     run_pending()

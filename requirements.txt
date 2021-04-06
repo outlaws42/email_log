@@ -1,1 +1,2 @@
+PyYAML==5.4.1
 schedule==1.0.0

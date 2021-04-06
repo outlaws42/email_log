@@ -7,12 +7,12 @@ __pycache__/
 *.sql
 *.geany
 emailenv
+email-log.service
 temp.txt
 temp.py
 .idea/
 idea/*
 .vscode
 *.swp
-weatherkiosk/*.swp
 *.swo
 

@@ -1,11 +1,13 @@
-from tmod import open_file, check_file_age, last_n_lines
+# -*- coding: utf-8 -*-
+
+from tmod import open_file, open_yaml, check_file_age, last_n_lines
 from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
 from os import environ
 
-version = '2021-04-03'
+version = '2021-04-05'
 username = getuser()
 
 def  call_funtion():
@@ -27,15 +29,23 @@ def file_age(filename, lines):
     con = last_n_lines(filename, lines)
   return con
 
+def login_info():
+  ps = open_yaml('.cred.yaml', 'home')
+  for key, value in ps.items():
+    us = key
+    psw = value
+  return [us,psw]
+
 def mail(filename, lines):
-  us = environ.get('LOG_EMAIL')
-  psw = environ.get('LOG_EMAIL_PASS')
+  us, psw = login_info()
+  # us = environ.get('LOG_EMAIL')
+  # psw = environ.get('LOG_EMAIL_PASS')
   recipients = open_file('.rec', 'home').splitlines()
   content = file_age(filename, lines)
-  print(content)
 
   subject = f'Backup Log: for {username} (Log file: {filename})'
   message = f'Subject: {subject}\n\n{content}'
+  print(message)
   try:
     mail = SMTP('smtp.gmail.com', 587)
     mail.ehlo()
@@ -50,7 +60,7 @@ def mail(filename, lines):
     print(e)
 
 
-every().day.at("04:19").do(call_funtion)
+every().day.at("13:15").do(call_funtion)
 
 while True:
     run_pending()

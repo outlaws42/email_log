@@ -10,6 +10,7 @@ emailenv
 email-log.service
 temp.txt
 temp.py
+tmod.py
 .idea/
 idea/*
 .vscode

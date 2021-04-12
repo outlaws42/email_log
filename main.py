@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+version = '2021-04-12'
 
 from tmod import open_file, open_yaml, check_file_age, last_n_lines
 from schedule import run_pending, every
@@ -7,21 +8,30 @@ from time import sleep
 from getpass import getuser
 from os import environ
 
-version = '2021-04-05'
+
 username = getuser()
+timer = open_file('.logtimer', 'home', '13:15')
+print(timer)
 
 def  call_funtion():
   print(username)
   if username == 'cara':
-    mail('Logs/net_backup.log', 30)
-    mail('Logs/backupUSB.log', 30)
+    log = ['Logs/net_backup.log', 'Logs/backupUSB.log']
+    for i in len(log):
+      body = mail_body(log[i], 30)
+      sub = f'Backup Log: for {username} (Log file: {log[i]})'
+      mail(body, sub)
+
   elif username == 'troy':
-    mail('Logs/net_backup.log', 30)
+    log = 'Logs/net_backup.log'
+    body = mail_body(log, 30)
+    sub = f'Backup Log: for {username} (Log file: {log})'
+    mail(body, sub)
   else:
     print('Unknown log file')
 
-def file_age(filename, lines):
-  age =  check_file_age(filename)
+def mail_body(filename, lines):
+  age =  check_file_age(filename, 'home')
   print(f'file age {age} hours')
   if age >= 24:
     con = f"The log file {filename} for {username} is {age} hours old check backup"
@@ -36,15 +46,10 @@ def login_info():
     psw = value
   return [us,psw]
 
-def mail(filename, lines):
+def mail(body, subject):
   us, psw = login_info()
-  # us = environ.get('LOG_EMAIL')
-  # psw = environ.get('LOG_EMAIL_PASS')
   recipients = open_file('.rec', 'home').splitlines()
-  content = file_age(filename, lines)
-
-  subject = f'Backup Log: for {username} (Log file: {filename})'
-  message = f'Subject: {subject}\n\n{content}'
+  message = f'Subject: {subject}\n\n{body}'
   print(message)
   try:
     mail = SMTP('smtp.gmail.com', 587)
@@ -60,7 +65,7 @@ def mail(filename, lines):
     print(e)
 
 
-every().day.at("13:15").do(call_funtion)
+every().day.at(timer).do(call_funtion)
 
 while True:
     run_pending()

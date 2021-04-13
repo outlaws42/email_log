@@ -34,7 +34,7 @@ def mail_body(filename, lines):
   if age >= 24:
     con = f"The log file {filename} for {username} is {age} hours old check backup"
   else:
-    con = last_n_lines(filename, lines)
+    con = last_n_lines(filename, lines,'home')
   return con
 
 def login_info():

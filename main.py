@@ -6,8 +6,6 @@ from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
-from os import environ
-
 
 username = getuser()
 timer = open_file('.logtimer', 'home', '13:15')
@@ -17,7 +15,7 @@ def  call_funtion():
   print(username)
   if username == 'cara':
     log = ['Logs/net_backup.log', 'Logs/backupUSB.log']
-    for i in len(log):
+    for i in range(len(log)):
       body = mail_body(log[i], 30)
       sub = f'Backup Log: for {username} (Log file: {log[i]})'
       mail(body, sub)

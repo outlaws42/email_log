@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-13'
+version = '2021-04-17'
 
 # Imports included with python
 import os
@@ -23,48 +23,38 @@ def get_resource_path(rel_path):
     abs_path_to_resource = os.path.abspath(rel_path_to_resource)
     return abs_path_to_resource
 
-def open_file(file_,type_='relative', variable = '0'):
+def open_yaml(
+    fname: str,
+    fdest: str ='relative',
+    def_content: dict = {'key': 'value'}
+    ):
+    """
+    fname = filename, fdest = file destination, 
+    def_content = default value if the file doesn't exist
+    opens the file if it exists and returns the contents
+    if it doesn't exitst it creates it writes 
+    the def_content value to it and returns the def_content value
+    import os, yaml(pip install pyyaml)
+    """
     home = os.path.expanduser("~")
     try:
-        if type_ == 'home' or type_ == 'Home':
-            with open(f'{home}/{file_}', 'r') as path_text:
-                variable=path_text.read()
+        if fdest == 'home' or fdest == 'Home':
+            with open(f'{home}/{fname}', 'r') as fle:
+                    content = yaml.full_load(fle)
+            return content
         else:
-            with open(get_resource_path(file_), 'r') as text:
-                variable=text.read()
-        return variable
-    except(FileNotFoundError) as e:
-        print(e)
-        print('It is reading here')
-        if type_ == 'home' or type_ == 'Home':
-            with open(f'{home}/{file_}', 'w') as output:
-                output.write(variable)
-        else:
-            with open(get_resource_path(file_), 'w') as output:
-                output.write(variable)
-        return variable
-
-def open_yaml(file_,type_='relative'):
-    home = os.path.expanduser("~")
-    try:
-        if type_ == 'home' or type_ == 'Home':
-            with open(f'{home}/{file_}', 'r') as fle:
-                    variable = yaml.full_load(fle)
-            return variable
-        else:
-            with open(get_resource_path(file_), 'r') as fle:
-                    variable = yaml.full_load(fle)
-            return variable
+            with open(get_resource_path(fname), 'r') as fle:
+                    content = yaml.full_load(fle)
+            return content
     except(FileNotFoundError, EOFError) as e:
         print(e)
-        variable = 0
-        if type_ == 'home' or type_ == 'Home':
-            with open(f'{home}/{file_}', 'w') as fle:
-                yaml.dump(variable, fle)
+        if fdest == 'home' or fdest == 'Home':
+            with open(f'{home}/{fname}', 'w') as output:
+                yaml.dump(def_content,output, sort_keys=True)
         else:
-            with open(get_resource_path(file_), 'w') as fle:
-                yaml.dump(variable, fle)
-        return variable
+            with open(get_resource_path(fname), 'w') as output:
+                yaml.dump(def_content,output, sort_keys=True)
+        return def_content
               
 # Gleen info ////////////////////////////////////////////////////
 

@@ -8,6 +8,7 @@ __pycache__/
 *.geany
 emailenv
 email-log.service
+default.yaml
 temp.txt
 temp.py
 .idea/

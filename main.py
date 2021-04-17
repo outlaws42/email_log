@@ -1,15 +1,26 @@
 # -*- coding: utf-8 -*-
-version = '2021-04-12'
+version = '2021-04-17'
 
-from tmod import open_file, open_yaml, check_file_age, last_n_lines
+from tmod import open_yaml, check_file_age, last_n_lines
 from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
 
+default: dict = open_yaml(
+  fname = 'default.yaml',
+  fdest = 'relative',
+  )
+
 username = getuser()
-timer = open_file('.logtimer', 'home', '13:15')
-print(timer)
+# timer = open_file('.logtimer', 'home', '13:15')
+# print(timer)
+settings = open_yaml(
+  fname = '.config/emailog_set.yaml',
+  fdest = 'home',
+  def_content = default,
+  )
+print(settings['runtime'])
 
 def  call_funtion():
   print(username)
@@ -46,7 +57,7 @@ def login_info():
 
 def mail(body, subject):
   us, psw = login_info()
-  recipients = open_file('.rec', 'home').splitlines()
+  recipients = settings['sendto'] #open_file('.rec', 'home').splitlines()
   message = f'Subject: {subject}\n\n{body}'
   print(message)
   try:
@@ -63,7 +74,7 @@ def mail(body, subject):
     print(e)
 
 
-every().day.at(timer).do(call_funtion)
+every().day.at(settings['runtime']).do(call_funtion)
 
 while True:
     run_pending()

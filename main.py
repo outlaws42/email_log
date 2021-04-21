@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-version = '2021-04-17'
+version = '2021-04-21'
 
-from tmod import open_yaml, check_file_age, last_n_lines
+from tmod import (
+  open_file, open_yaml, check_file_age, last_n_lines,
+   decrypt_login, mail)
 from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
+from icecream import ic
+
+ic.configureOutput(includeContext=True)
 
 default: dict = open_yaml(
   fname = 'default.yaml',
@@ -20,7 +25,7 @@ settings = open_yaml(
   fdest = 'home',
   def_content = default,
   )
-print(settings['runtime'])
+ic(settings['runtime'])
 
 def  call_funtion():
   print(username)
@@ -29,13 +34,40 @@ def  call_funtion():
     for i in range(len(log)):
       body = mail_body(log[i], 30)
       sub = f'Backup Log: for {username} (Log file: {log[i]})'
-      mail(body, sub)
+      key = open_file(
+        fname = ".config/info.key", 
+        fdest = "home",
+        mode ="rb")
+      login = decrypt_login(key = key, 
+      e_fname = ".config/.cred_en.yaml", 
+      fdest = "home"
+      )
+      mail(
+        body = body, 
+        subject = sub, 
+        send_to = settings['sendto'],
+        login = login
+        )
 
   elif username == 'troy':
     log = 'Logs/net_backup.log'
     body = mail_body(log, 30)
     sub = f'Backup Log: for {username} (Log file: {log})'
-    mail(body, sub)
+    key = open_file(
+           fname = ".config/info.key", 
+           fdest = "home",
+           mode ="rb"
+           )
+    login = decrypt_login(key = key, 
+      e_fname = ".config/.cred_en.yaml", 
+      fdest = "home"
+      )
+    mail(
+      body = body, 
+      subject = sub, 
+      send_to = settings['sendto'],
+      login = login
+        )
   else:
     print('Unknown log file')
 
@@ -55,23 +87,23 @@ def login_info():
     psw = value
   return [us,psw]
 
-def mail(body, subject):
-  us, psw = login_info()
-  recipients = settings['sendto'] #open_file('.rec', 'home').splitlines()
-  message = f'Subject: {subject}\n\n{body}'
-  print(message)
-  try:
-    mail = SMTP('smtp.gmail.com', 587)
-    mail.ehlo()
-    mail.starttls()
-    mail.ehlo()
-    mail.login(us, psw)
-    mail.sendmail(us,recipients, message)
-    mail.close()
-    print('Successfully sent email')
-  except Exception as e:
-    print('Could not send email because')
-    print(e)
+# def mail(body, subject):
+#   us, psw = login_info()
+#   recipients = settings['sendto'] #open_file('.rec', 'home').splitlines()
+#   message = f'Subject: {subject}\n\n{body}'
+#   print(message)
+#   try:
+#     mail = SMTP('smtp.gmail.com', 587)
+#     mail.ehlo()
+#     mail.starttls()
+#     mail.ehlo()
+#     mail.login(us, psw)
+#     mail.sendmail(us,recipients, message)
+#     mail.close()
+#     print('Successfully sent email')
+#   except Exception as e:
+#     print('Could not send email because')
+#     print(e)
 
 
 every().day.at(settings['runtime']).do(call_funtion)

@@ -18,8 +18,6 @@ default: dict = open_yaml(
   )
 
 username = getuser()
-# timer = open_file('.logtimer', 'home', '13:15')
-# print(timer)
 settings = open_yaml(
   fname = '.config/emailog_set.yaml',
   fdest = 'home',
@@ -29,23 +27,27 @@ ic(settings['runtime'])
 
 def  call_funtion():
   print(username)
+  kf = ".config/info.key"
+  ef = ".config/.cred_en.yaml"
+  st = settings['sendto']
   if username == 'cara':
     log = ['Logs/net_backup.log', 'Logs/backupUSB.log']
     for i in range(len(log)):
       body = mail_body(log[i], 30)
       sub = f'Backup Log: for {username} (Log file: {log[i]})'
       key = open_file(
-        fname = ".config/info.key", 
+        fname = kf, 
         fdest = "home",
         mode ="rb")
-      login = decrypt_login(key = key, 
-      e_fname = ".config/.cred_en.yaml", 
-      fdest = "home"
+      login = decrypt_login(
+        key = key, 
+        e_fname = ef, 
+        fdest = "home"
       )
       mail(
         body = body, 
         subject = sub, 
-        send_to = settings['sendto'],
+        send_to = st,
         login = login
         )
 
@@ -54,18 +56,19 @@ def  call_funtion():
     body = mail_body(log, 30)
     sub = f'Backup Log: for {username} (Log file: {log})'
     key = open_file(
-           fname = ".config/info.key", 
+           fname = kf, 
            fdest = "home",
            mode ="rb"
            )
-    login = decrypt_login(key = key, 
-      e_fname = ".config/.cred_en.yaml", 
+    login = decrypt_login(
+      key = key, 
+      e_fname = ef, 
       fdest = "home"
       )
     mail(
       body = body, 
       subject = sub, 
-      send_to = settings['sendto'],
+      send_to = st,
       login = login
         )
   else:
@@ -73,41 +76,21 @@ def  call_funtion():
 
 def mail_body(filename, lines):
   age =  check_file_age(filename, 'home')
-  print(f'file age {age} hours')
+  ic(age)
   if age >= 24:
     con = f"The log file {filename} for {username} is {age} hours old check backup"
   else:
     con = last_n_lines(filename, lines,'home')
   return con
 
-def login_info():
-  ps = open_yaml('.cred.yaml', 'home')
-  for key, value in ps.items():
-    us = key
-    psw = value
-  return [us,psw]
-
-# def mail(body, subject):
-#   us, psw = login_info()
-#   recipients = settings['sendto'] #open_file('.rec', 'home').splitlines()
-#   message = f'Subject: {subject}\n\n{body}'
-#   print(message)
-#   try:
-#     mail = SMTP('smtp.gmail.com', 587)
-#     mail.ehlo()
-#     mail.starttls()
-#     mail.ehlo()
-#     mail.login(us, psw)
-#     mail.sendmail(us,recipients, message)
-#     mail.close()
-#     print('Successfully sent email')
-#   except Exception as e:
-#     print('Could not send email because')
-#     print(e)
-
-
 every().day.at(settings['runtime']).do(call_funtion)
 
-while True:
-    run_pending()
-    sleep(1)
+if __name__ == "__main__":
+  try:
+    print('waiting on timer')
+    while True:
+      run_pending()
+      sleep(1)
+  except KeyboardInterrupt as e:
+    print(e)
+    print('Interrupted')

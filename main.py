@@ -8,9 +8,6 @@ from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
-from icecream import ic
-
-ic.configureOutput(includeContext=True)
 
 default: dict = open_yaml(
   fname = 'default.yaml',
@@ -23,7 +20,6 @@ settings = open_yaml(
   fdest = 'home',
   def_content = default,
   )
-ic(settings['runtime'])
 
 def  call_funtion():
   print(username)
@@ -76,7 +72,6 @@ def  call_funtion():
 
 def mail_body(filename, lines):
   age =  check_file_age(filename, 'home')
-  ic(age)
   if age >= 24:
     con = f"The log file {filename} for {username} is {age} hours old check backup"
   else:

@@ -1,2 +1,12 @@
+altgraph==0.17
+asttokens==2.0.5
+cffi==1.14.5
+colorama==0.4.4
+cryptography==3.4.7
+executing==0.6.0
+icecream==2.1.0
+pycparser==2.20
+Pygments==2.8.1
 PyYAML==5.4.1
 schedule==1.0.0
+six==1.15.0

@@ -22,7 +22,6 @@ settings = open_yaml(
   )
 
 def  call_funtion():
-  print(username)
   kf = ".config/info.key"
   ef = ".config/.cred_en.yaml"
   st = settings['sendto']

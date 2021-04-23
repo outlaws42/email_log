@@ -65,6 +65,45 @@ def open_file(
                 output.write(def_content)
         return def_content
 
+def save_file(
+    fname: str,
+    content: str,
+    fdest: str ='relative', 
+    mode: str = 'w'):
+    """
+    fname = filename, content = what to save to the file, 
+    fdest = where to save file, mode = w for write or a for append
+    import os
+    """
+    home = os.path.expanduser("~")
+    if fdest == 'home' or fdest == 'Home':
+        with open(f'{home}/{fname}', mode) as output:
+            output.write(content)
+    else:
+        with open(get_resource_path(fname), mode) as output:
+            output.write(content)
+
+def save_yaml(
+    fname: str,
+    content: dict,
+    fdest: str ='relative',
+    mode: str = 'w'
+    ):
+    """
+    fname = filename, content = data to save, fdest = file destination,
+    mode = 'w' for overwrite file or 'a' to append to the file
+    Takes a dictionary and writes it to file specified. it will either
+    write or append to the file depending on the mode method
+    requires: import os, yaml
+    """
+    home = os.path.expanduser("~")
+    if fdest == 'home' or fdest == 'Home':
+        with open(f'{home}/{fname}', mode) as output:
+            yaml.safe_dump(content,output, sort_keys=True)
+    else:
+        with open(get_resource_path(fname), mode) as output:
+            yaml.safe_dump(content,output, sort_keys=True)
+
 def open_yaml(
     fname: str,
     fdest: str ='relative',
@@ -98,7 +137,56 @@ def open_yaml(
                 yaml.dump(def_content,output, sort_keys=True)
         return def_content
               
+def check_dir(dname: str):
+  home = os.path.expanduser("~")
+  dpath = f'{home}/{dname}'
+  dir_exist = os.path.isdir(dpath)
+  return dir_exist
 
+def make_dir(fname:str):
+  home = os.path.expanduser("~")
+  os.mkdir(f'{home}/{fname}')
+
+def remove_file(fname:str):
+  home = os.path.expanduser("~")
+  os.remove(f'{home}/{fname}')
+
+# Encryption
+
+def gen_key(fname: str,):
+  home = os.path.expanduser("~")
+  key = Fernet.generate_key()
+  with open(f'{home}/{fname}', 'wb')as fkey:
+    fkey.write(key)
+
+def encrypt(
+  key: str, 
+  fname: str, 
+  e_fname: str, 
+  fdest='relative', 
+  ):
+  """
+  key = key file used to encrypt file,
+  fname = file to encrypt,
+  e_fname = name of the encrypted file,
+  fdest = file destination relative too,
+  Takes a input file and encrypts output file
+  requires tmod open_file and save_file functions
+  requires from cryptography.fernet import Fernet
+  """
+  keyf = Fernet(key)
+  e_file = open_file(
+    fname = fname,
+    fdest = fdest,
+    mode = "rb"
+    )
+  encrypted_file = keyf.encrypt(e_file)
+  save_file(
+    fname = e_fname,
+    content = encrypted_file,
+    fdest = fdest,
+    mode = "wb"
+  )
 
 def decrypt_login(
   key: str, 

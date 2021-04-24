@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-21'
+version = '2021-04-24'
 
 # Imports included with python
 import os
@@ -278,3 +278,53 @@ def mail(
   except Exception as e:
     print('Could not send email because')
     print(e)
+
+# colors 
+def prRedMulti(ntext,text): print(f"{ntext}\033[91m \033[1m{text}\033[00m")
+def prRedBold(text): print(f"\033[91m \033[1m{text}\033[00m")
+def prGreenBold(text): print(f"\033[92m \033[1m{text}\033[00m")
+def prYellowBold(text): print(f"\033[93m \033[1m{text}\033[00m")
+def prLightPurpleBold(text): print(f"\033[94m \033[1m{text}\033[00m")
+def prPurpleBold(text): print(f"\033[95m \033[1m{text}\033[00m")
+def prCyanBold(text): print(f"\033[96m \033[1m{text}\033[00m")
+def prLightGrayBold(text): print(f"\033[97m \033[1m{text}\033[00m")
+def prBlackBold(text): print(f"\033[98m \033[1m{text}\033[00m")
+
+def prRed(text): print(f"\033[91m {text}\033[00m")
+def prGreen(text): print(f"\033[92m {text}\033[00m")
+def prYellow(text): print(f"\033[93m {text}\033[00m")
+def prLightPurple(text): print(f"\033[94m {text}\033[00m")
+def prPurple(text): print(f"\033[95m {text}\033[00m")
+def prCyan(text): print(f"\033[96m {text}\033[00m")
+def prLightGray(text): print(f"\033[97m {text}\033[00m")
+def prBlack(text): print(f"\033[98m {text}\033[00m")
+
+# Input Loop
+def input_loop(
+  subject: str, 
+  description: str
+  ):
+  """
+  subject = The subject of the input item,
+  description = the description of the input item,
+  This would be use for a input item that you would
+  want to add to a list.
+  Requires: doesn't require any special imports
+  """
+  print(f'\nYou can add as many items as you like.')
+  prRedMulti('When your done adding, Type', 'NA')
+  item_list = []
+  item = ''
+  while True:
+    item: str = input(
+      f"Enter the {subject} {description}: ")
+    if (item == 'na') or (item == 'NA'):
+      length = len(item_list)
+      prRedMulti(f'\nYou have added {length} item(s), Because you typed', item)
+      print(f'That will complete your selection for {subject}.')
+      break
+    else:
+      prCyan(f'You added {item} to the list')
+      item_list.append(item)
+    prCyan(item_list)
+  return item_list

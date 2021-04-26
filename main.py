@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
-version = '2021-04-24'
+version = '2021-04-25'
 
 from tmod import (
-  check_dir, encrypt, open_file, open_yaml, check_file_age, last_n_lines,
-   decrypt_login, mail, gen_key, prGreenBold, save_yaml, input_loop,
-   remove_file, make_dir,prYellowBold, prRedMulti, prGreen, prCyan)
+  encrypt, input_single, open_file, 
+  open_yaml, check_file_age, last_n_lines,
+  decrypt_login, mail, gen_key, prCyanBold, 
+  prGreenBold, save_yaml, input_loop,
+  remove_file, make_dir,prYellowBold, 
+  prGreen, prCyanMultiB,check_dir, home_dir
+  )
 from schedule import run_pending, every
 from smtplib import SMTP
 from time import sleep
 from getpass import getuser
-from icecream import ic
+from datetime import datetime, time
 
 username = getuser()
-conf_dir = ".config/email-log"
+home = home_dir()
+conf_dir = ".config/wizard"
 
 def settings():
   settings = open_yaml(
@@ -30,16 +35,22 @@ def config_setup_email(conf_dir: str):
       mode ="rb"
       )
   prYellowBold("\nWe could not find any configuration folder ")
-  prGreen('This Wizard will ask some question to setup the configuration needed for the script to function.')
+  prGreen('This Wizard will ask some questions to setup the configuration needed for the script to function.')
   prGreenBold('This configuration wizard will only run once.')
   prGreen(
-    '\nThe first 2 questions are going to be about your email and password you are using\n to send')
-  prGreen('this email will be stored on your local computer encrypted seperate from ')
-  prGreen('from the rest of the configuration')
-  email = input("\nEnter your email(example@gmail.com): " )
-  prCyan(email)
-  pas = input("\nEnter your password(examplepassword): ")
-  prCyan("*******")
+    '\nThe first 2 questions are going to be about your email and password you are using to send.')
+  prGreen('this login information will be stored on your local computer encrypted seperate from ')
+  prGreen('from the rest of the configuration. This is not viewable by browsing the filesystem')
+  email = input_single(
+    in_message = "\nEnter your email",
+    in_type = 'email'
+   )
+  # prCyan(email)
+
+  pas = input_single(
+    in_message = "\nEnter your password",
+    in_type = 'password')
+  # prCyan('*****')
   lo = {email:pas}
   save_yaml(
     fname = f'{conf_dir}/.cred.yaml',
@@ -54,25 +65,33 @@ def config_setup_email(conf_dir: str):
     )
   remove_file(f'{conf_dir}/.cred.yaml')
 
-  run: str = str(input(
-    "\nEnter the time to run the script daily(default: 05:00): ") or '05:00')
-  prCyan(run)
-  numb_lines: int = int(input(
-    "\nEnter the number of lines from the end of log file to send(default: 30): ") or 30)
-  prCyan(numb_lines)
-  
+  run = input_single(
+    in_message ="Enter the time to run the script daily(Example: 05:00)",
+    in_type = "time"
+    )
+
+  numb_lines = input_single(
+    in_message='Enter the number of lines from the end of log file to send',
+    in_type = 'int',
+    max_number = 400
+    )
+  # prCyan(numb_lines)
+
   send_list = input_loop(
     subject= "email address",
-    description = 'to send to (example@gmail.com)')
-
-  logf = input_loop(
+    description = 'to send to (example@gmail.com)',
+    in_type = 'email')
+ 
+  log_list = input_loop(
     subject= "log file",
-    description = 'to check relative to your home dir (Example: Logs/net_backup.log)')
+    description = 'to check relative to your home dir (Example: Logs/net_backup.log)',
+    in_type = 'file'
+    )
   load = {
     'runtime': run,
     'lines': numb_lines,
     'sendto': send_list,
-    'logs': logf
+    'logs': log_list
     }
   save_yaml(
     fname =f'{conf_dir}/emailog_set.yaml',
@@ -80,10 +99,9 @@ def config_setup_email(conf_dir: str):
     content = load)
   prYellowBold('\nThis completes the wizard')
   print('The configuration file has been written to disk')
-  prRedMulti('If you change the settings you can edit', f'{conf_dir}/emailog_set.yaml')
-  print('in your home dir.')
+  prCyanMultiB('If you want to change the settings you can edit', f'{home}/{conf_dir}/emailog_set.yaml')
   prGreenBold("This wizard won't run any more, So the script can now be run automatically\n")
-
+  prCyanBold("You can stop the script by typing Ctrl + C\n")
 
 def  call_funtion():  
   settings = open_yaml(

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-24'
+version = '2021-04-25'
 
 # Imports included with python
 import os
@@ -9,7 +9,7 @@ import os.path
 import sys
 from datetime import datetime
 from smtplib import SMTP
-
+from re import search
 # Imports installed through pip
 try:
   # pip install pyyaml if needed
@@ -24,6 +24,10 @@ except:
   pass
 
 # File I/O /////////////////////////////////////////
+def home_dir():
+  home = os.path.expanduser('~')
+  return home
+
 def get_resource_path(rel_path):
     dir_of_py_file = os.path.dirname(sys.argv[0])
     rel_path_to_resource = os.path.join(dir_of_py_file, rel_path)
@@ -45,7 +49,7 @@ def open_file(
     the def_content value to it and returns the def_content value
     import os
     """
-    home = os.path.expanduser("~")
+    home = home_dir()
     try:
         if fdest == 'home' or fdest == 'Home':
             with open(f'{home}/{fname}', mode) as path_text:
@@ -75,7 +79,7 @@ def save_file(
     fdest = where to save file, mode = w for write or a for append
     import os
     """
-    home = os.path.expanduser("~")
+    home = home_dir()
     if fdest == 'home' or fdest == 'Home':
         with open(f'{home}/{fname}', mode) as output:
             output.write(content)
@@ -96,7 +100,7 @@ def save_yaml(
     write or append to the file depending on the mode method
     requires: import os, yaml
     """
-    home = os.path.expanduser("~")
+    home = home_dir()
     if fdest == 'home' or fdest == 'Home':
         with open(f'{home}/{fname}', mode) as output:
             yaml.safe_dump(content,output, sort_keys=True)
@@ -117,7 +121,7 @@ def open_yaml(
     the def_content value to it and returns the def_content value
     import os, yaml(pip install pyyaml)
     """
-    home = os.path.expanduser("~")
+    home = home_dir()
     try:
         if fdest == 'home' or fdest == 'Home':
             with open(f'{home}/{fname}', 'r') as fle:
@@ -138,23 +142,29 @@ def open_yaml(
         return def_content
               
 def check_dir(dname: str):
-  home = os.path.expanduser("~")
+  home = home_dir()
   dpath = f'{home}/{dname}'
   dir_exist = os.path.isdir(dpath)
   return dir_exist
 
 def make_dir(fname:str):
-  home = os.path.expanduser("~")
+  home = home_dir()
   os.mkdir(f'{home}/{fname}')
 
 def remove_file(fname:str):
-  home = os.path.expanduser("~")
+  home = home_dir()
   os.remove(f'{home}/{fname}')
+
+def check_file_dir(fname: str):
+   home = home_dir()
+   fpath = f'{home}/{fname}'
+   file_exist = os.path.exists(fpath)
+   return file_exist
 
 # Encryption
 
 def gen_key(fname: str,):
-  home = os.path.expanduser("~")
+  home = home_dir()
   key = Fernet.generate_key()
   with open(f'{home}/{fname}', 'wb')as fkey:
     fkey.write(key)
@@ -213,7 +223,7 @@ def last_n_lines(fname, lines, fdest='relative'):
   and returns those lines in text.
   Arguments = filename, number of lines
   """
-  home = os.path.expanduser("~")
+  home = home_dir()
   try:
     file_lines = []
     if fdest == 'home' or fdest == 'Home':
@@ -239,7 +249,7 @@ def check_file_age(fname, fdest='relative'):
   Arguments = filename from home dir
   Requires import os
   """
-  home = os.path.expanduser("~")
+  home = home_dir()
   if fdest == 'home' or fdest == 'Home':
     file_info= os.stat(f'{home}/{fname}')
   else:
@@ -281,6 +291,9 @@ def mail(
 
 # colors 
 def prRedMulti(ntext,text): print(f"{ntext}\033[91m \033[1m{text}\033[00m")
+def prCyanMulti(ntext,text): print(f"{ntext}\033[96m {text}\033[00m")
+def prCyanMultiB(ntext,text): print(f"{ntext}\033[96m \033[1m{text}\033[00m")
+
 def prRedBold(text): print(f"\033[91m \033[1m{text}\033[00m")
 def prGreenBold(text): print(f"\033[92m \033[1m{text}\033[00m")
 def prYellowBold(text): print(f"\033[93m \033[1m{text}\033[00m")
@@ -299,10 +312,11 @@ def prCyan(text): print(f"\033[96m {text}\033[00m")
 def prLightGray(text): print(f"\033[97m {text}\033[00m")
 def prBlack(text): print(f"\033[98m {text}\033[00m")
 
-# Input Loop
+# Input functions
 def input_loop(
   subject: str, 
-  description: str
+  description: str,
+  in_type: str= 'email'
   ):
   """
   subject = The subject of the input item,
@@ -311,20 +325,89 @@ def input_loop(
   want to add to a list.
   Requires: doesn't require any special imports
   """
-  print(f'\nYou can add as many items as you like.')
-  prRedMulti('When your done adding, Type', 'NA')
+  prPurpleBold(f'\n{subject}')
+  print(f'You can add as many items as you like.')
+  prRedMulti('When your done adding, Type', 'exit')
   item_list = []
-  item = ''
   while True:
-    item: str = input(
-      f"Enter the {subject} {description}: ")
-    if (item == 'na') or (item == 'NA'):
+    item: str = input(f"Enter the {subject} {description}: ")
+    while (validate_input(item, in_type) == False):
+      if (item == 'exit') or (item == 'Exit') or (item == 'EXIT'):
+        break
+      prRedBold(f'This is not a valid {in_type}')
+      item: str = input(f"Enter the {subject} {description}: ")
+    if (item == 'exit') or (item == 'Exit') or (item == 'EXIT'):
       length = len(item_list)
       prRedMulti(f'\nYou have added {length} item(s), Because you typed', item)
       print(f'That will complete your selection for {subject}.')
       break
     else:
-      prCyan(f'You added {item} to the list')
+      prCyanMulti(f'You added ', item)
       item_list.append(item)
     prCyan(item_list)
   return item_list
+
+def input_single(
+  in_message: str,
+  in_type: str ='email',
+  max_number: int = 200
+  ):
+  """
+  in_message = the message you want in your input string,
+  in_type = the type of input field. Choices are 
+  email, file, int, time
+  This is for a single item input. This uses "validate_input"
+  to verify that items entered meet requirements for that type of input
+  """
+  if in_type == 'int':
+    item = input(f'{in_message}(Max {max_number}): ')
+  else:
+   item = input(f'{in_message}: ')
+  while (validate_input(item, in_type, max_number) == False):
+    prRedBold(f'This is not a valid {in_type}')
+    if in_type == 'int':
+      item = input(f'{in_message}(max {max_number}): ')
+    else:
+      item = input(f'{in_message}: ')
+  if in_type == 'password':
+    prCyan(f'******')
+  else:
+    prCyanMulti('You entered ', item)
+  return item
+
+def validate_input(
+  item:str,
+  in_type: str,
+  max_number: int = 200 
+  ):
+  if in_type == 'email':
+    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    if (search(regex,item)):
+      return True
+    else:
+      return False
+  elif in_type == 'file':
+    if not item:
+      return False
+    else:
+     return check_file_dir(item)
+  elif in_type == 'password':
+    if not item:
+      return False
+  elif in_type == 'time':
+    try:
+      datetime.strptime(item,'%H:%M').time()
+      return True
+    except ValueError:
+      return False
+  elif in_type == 'int':
+    try:
+      number = int(item)
+      if (number <=0) or (number > max_number):
+        return False
+      return True
+    except Exception:
+      return False
+    
+  else:
+    return False

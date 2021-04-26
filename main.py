@@ -17,7 +17,7 @@ from datetime import datetime, time
 
 username = getuser()
 home = home_dir()
-conf_dir = ".config/wizard"
+conf_dir = ".config/email-log"
 
 def settings():
   settings = open_yaml(

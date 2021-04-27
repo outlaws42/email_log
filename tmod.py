@@ -411,3 +411,78 @@ def validate_input(
     
   else:
     return False
+
+def config_setup(conf_dir: str):
+  """
+  conf_dir = Configuration dir. This would normally be in the .config/progName
+  This commandline wizard creates the program config dir and populates the 
+  setup configuration file. Sets up username and password for email notifications
+  """
+  home = home_dir()
+  make_dir(conf_dir)
+  gen_key(f'{conf_dir}/.info.key')
+  key = open_file(
+      fname = f'{conf_dir}/.info.key', 
+      fdest = "home",
+      mode ="rb"
+      )
+  prYellowBold("\nWe could not find any configuration folder ")
+  prGreen('This Wizard will ask some questions to setup the configuration needed for the script to function.')
+  prGreenBold('This configuration wizard will only run once.')
+  prGreen(
+    '\nThe first 2 questions are going to be about your email and password you are using to send.')
+  prGreen('this login information will be stored on your local computer encrypted seperate from ')
+  prGreen('from the rest of the configuration. This is not viewable by browsing the filesystem')
+  email = input_single(
+    in_message = "\nEnter your email",
+    in_type = 'email'
+   )
+  pas = input_single(
+    in_message = "\nEnter your password",
+    in_type = 'password')
+  lo = {email:pas}
+  save_yaml(
+    fname = f'{conf_dir}/.cred.yaml',
+    fdest = 'home',
+    content = lo
+    )
+  encrypt(
+    key = key,
+    fname = f'{conf_dir}/.cred.yaml',
+    e_fname = f'{conf_dir}/.cred_en.yaml',
+    fdest = 'home'
+    )
+  remove_file(f'{conf_dir}/.cred.yaml')
+  run = input_single(
+    in_message ="Enter the time to run the script daily(Example: 05:00)",
+    in_type = "time"
+    )
+  numb_lines = input_single(
+    in_message='Enter the number of lines from the end of log file to send',
+    in_type = 'int',
+    max_number = 400
+    )
+  send_list = input_loop(
+    subject= "email address",
+    description = 'to send to (example@gmail.com)',
+    in_type = 'email')
+  log_list = input_loop(
+    subject= "log file",
+    description = 'to check relative to your home dir (Example: Logs/net_backup.log)',
+    in_type = 'file'
+    )
+  load = {
+    'runtime': run,
+    'lines': numb_lines,
+    'sendto': send_list,
+    'logs': log_list
+    }
+  save_yaml(
+    fname =f'{conf_dir}/emailog_set.yaml',
+    fdest = 'home',
+    content = load)
+  prYellowBold('\nThis completes the wizard')
+  print('The configuration file has been written to disk')
+  prCyanMultiB('If you want to change the settings you can edit', f'{home}/{conf_dir}/emailog_set.yaml')
+  prGreenBold("This wizard won't run any more, So the script can now be run automatically\n")
+  prCyanBold("You can stop the script by typing Ctrl + C\n")

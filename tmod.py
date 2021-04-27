@@ -325,7 +325,7 @@ def input_loop(
   want to add to a list.
   Requires: doesn't require any special imports
   """
-  prPurpleBold(f'\n{subject}')
+  prPurpleBold(f'\n{subject.capitalize()}')
   print(f'You can add as many items as you like.')
   prRedMulti('When your done adding, Type', 'exit')
   item_list = []

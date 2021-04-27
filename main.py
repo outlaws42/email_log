@@ -19,14 +19,14 @@ username = getuser()
 home = home_dir()
 conf_dir = ".config/email-log"
 
-def settings():
+def runtime():
   settings = open_yaml(
   fname = f"{conf_dir}/emailog_set.yaml",
   fdest = "home",
   )
   return settings['runtime']
 
-def config_setup_email(conf_dir: str):
+def config_setup(conf_dir: str):
   make_dir(conf_dir)
   gen_key(f'{conf_dir}/.info.key')
   key = open_file(
@@ -143,8 +143,8 @@ def mail_body(filename, lines):
 
 dir_exist = check_dir(conf_dir)
 if dir_exist == False:
-  config_setup_email(conf_dir)
-every().day.at(str(settings())).do(call_funtion)
+  config_setup(conf_dir)
+every().day.at(str(runtime())).do(call_funtion)
 
 if __name__ == "__main__":
   try:

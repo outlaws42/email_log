@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = '2021-04-25'
+version = '2021-04-27'
 
 from tmod import (
   config_setup, open_file, 
@@ -21,8 +21,6 @@ def runtime():
   fdest = "home",
   )
   return settings['runtime']
-
-
 
 def  call_funtion():  
   settings = open_yaml(

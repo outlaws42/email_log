@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-25'
+version = '2021-04-27'
 
 # Imports included with python
 import os
@@ -155,11 +155,20 @@ def remove_file(fname:str):
   home = home_dir()
   os.remove(f'{home}/{fname}')
 
-def check_file_dir(fname: str):
-   home = home_dir()
-   fpath = f'{home}/{fname}'
-   file_exist = os.path.exists(fpath)
-   return file_exist
+def check_file_dir(fname: str, fdest: str = 'home'):
+  """
+  fname = name of the file or folder,
+  fdest = the destination, either home or relative to CWD
+  Check if file or folder exist returns True or False
+  Requires import os
+  """
+  home = home_dir()
+  if fdest == 'home' or fdest == 'Home':
+    fpath = f'{home}/{fname}'
+  else:
+    fpath = get_resource_path(fname)
+  file_exist = os.path.exists(fpath)
+  return file_exist
 
 # Encryption
 
@@ -321,7 +330,7 @@ def input_loop(
   """
   subject = The subject of the input item,
   description = the description of the input item,
-  This would be use for a input item that you would
+  This would be used for a input item that you would
   want to add to a list.
   Requires: doesn't require any special imports
   """
@@ -373,13 +382,23 @@ def input_single(
     prCyan(f'******')
   else:
     prCyanMulti('You entered ', item)
-  return item
+  if in_type == 'int':
+    return int(item)
+  else:
+    return item
 
 def validate_input(
   item:str,
   in_type: str,
   max_number: int = 200 
   ):
+  """
+  item = The data entered in the input field,
+  in_type = The type of data it is suposed to be,
+  max_number = the max number that can be ablied this if for int only.
+  Takes the input and checks to see if it is 
+  valid for its data type.
+  """
   if in_type == 'email':
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if (search(regex,item)):
@@ -412,27 +431,43 @@ def validate_input(
   else:
     return False
 
+## Wizard setup
 def config_setup(conf_dir: str):
   """
-  conf_dir = Configuration dir. This would normally be in the .config/progName
-  This commandline wizard creates the program config dir and populates the 
-  setup configuration file. Sets up username and password for email notifications
+  conf_dir = Configuration dir. This would 
+  normally be in the .config/progName,
+  This commandline wizard creates the 
+  program config dir and populates the 
+  setup configuration file. Sets up username 
+  and password for email notifications
   """
   home = home_dir()
   make_dir(conf_dir)
+
+  no_config = ('\nWe could not find any' 
+  'configuration folder')
+  intr_desc1 = ('This Wizard will ask some questions' 
+  'to setup the configuration needed for the script to function.')
+  intr_desc2 = ('This configuration wizard will only run once.')
+  intr_desc3 = ('\nThe first 2 questions are going' 
+  'to be about your email and password you are using to send.'
+  'this login information will be stored on your local' 
+  'computer encrypted seperate from '
+  'from the rest of the configuration.' 
+  'This is not viewable by browsing the filesystem'
+  )
+
   gen_key(f'{conf_dir}/.info.key')
   key = open_file(
       fname = f'{conf_dir}/.info.key', 
       fdest = "home",
       mode ="rb"
       )
-  prYellowBold("\nWe could not find any configuration folder ")
-  prGreen('This Wizard will ask some questions to setup the configuration needed for the script to function.')
-  prGreenBold('This configuration wizard will only run once.')
-  prGreen(
-    '\nThe first 2 questions are going to be about your email and password you are using to send.')
-  prGreen('this login information will be stored on your local computer encrypted seperate from ')
-  prGreen('from the rest of the configuration. This is not viewable by browsing the filesystem')
+  prYellowBold(no_config)
+  prGreen(intr_desc1)
+  prGreenBold(intr_desc2)
+  prGreen(intr_desc3)
+
   email = input_single(
     in_message = "\nEnter your email",
     in_type = 'email'
@@ -473,7 +508,7 @@ def config_setup(conf_dir: str):
     )
   load = {
     'runtime': run,
-    'lines': numb_lines,
+    'lines': int(numb_lines),
     'sendto': send_list,
     'logs': log_list
     }

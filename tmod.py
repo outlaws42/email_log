@@ -444,16 +444,16 @@ def config_setup(conf_dir: str):
   home = home_dir()
   make_dir(conf_dir)
 
-  no_config = ('\nWe could not find any' 
+  no_config = ('\nWe could not find any ' 
   'configuration folder')
-  intr_desc1 = ('This Wizard will ask some questions' 
+  intr_desc1 = ('This Wizard will ask some questions ' 
   'to setup the configuration needed for the script to function.')
   intr_desc2 = ('This configuration wizard will only run once.')
-  intr_desc3 = ('\nThe first 2 questions are going' 
-  'to be about your email and password you are using to send.'
-  'this login information will be stored on your local' 
-  'computer encrypted seperate from '
-  'from the rest of the configuration.' 
+  intr_desc3 = ('\nThe first 2 questions are going ' 
+  'to be about your email and password you are using to send. '
+  '\nThis login information will be stored on your local ' 
+  'computer encrypted seperate '
+  '\nfrom the rest of the configuration. ' 
   'This is not viewable by browsing the filesystem'
   )
 

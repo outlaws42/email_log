@@ -141,21 +141,61 @@ def open_yaml(
                 yaml.dump(def_content,output, sort_keys=True)
         return def_content
               
-def check_dir(dname: str):
+def check_dir(
+  dname: str, 
+  ddest: str = 'home'
+  ):
+  """
+  dname = name of the file or folder,
+  ddest = the destination, either home or relative to CWD
+  check to see if specified dir exists.
+  Requires import os
+  """
   home = home_dir()
-  dpath = f'{home}/{dname}'
+  if ddest == 'home' or ddest == 'Home':
+    dpath = f'{home}/{dname}'
+  else:
+    dpath = get_resource_path(dname)
   dir_exist = os.path.isdir(dpath)
   return dir_exist
 
-def make_dir(fname:str):
+def make_dir(
+  dname:str, 
+  ddest: str = 'home'
+  ):
+  """
+  dname = name of the file or folder,
+  ddest = the destination, either home or relative to CWD
+  Makes the dir specified.
+  Requires import os
+  """
   home = home_dir()
-  os.mkdir(f'{home}/{fname}')
+  if ddest == 'home' or ddest == 'Home':
+    os.mkdir(f'{home}/{dname}')
+  else:
+    os.mkdir(get_resource_path(dname))
 
-def remove_file(fname:str):
+
+def remove_file(
+  fname:str, 
+  fdest: str = 'home'
+  ):
+  """
+  fname = name of the file or folder,
+  fdest = the destination, either home or relative to CWD
+  Removes the file specified
+  Requires import os
+  """
   home = home_dir()
-  os.remove(f'{home}/{fname}')
+  if fdest == 'home' or fdest == 'Home':
+    os.remove(f'{home}/{fname}')
+  else:
+    os.remove(get_resource_path(fname))
 
-def check_file_dir(fname: str, fdest: str = 'home'):
+def check_file_dir(
+  fname: str, 
+  fdest: str = 'home'
+  ):
   """
   fname = name of the file or folder,
   fdest = the destination, either home or relative to CWD

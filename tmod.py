@@ -408,13 +408,13 @@ def input_single(
   This is for a single item input. This uses "validate_input"
   to verify that items entered meet requirements for that type of input
   """
-  if in_type == 'int':
+  if in_type == 'int' or in_type == 'float':
     item = input(f'{in_message}(Max {max_number}): ')
   else:
    item = input(f'{in_message}: ')
   while (validate_input(item, in_type, max_number) == False):
     prRedBold(f'This is not a valid {in_type}')
-    if in_type == 'int':
+    if in_type == 'int' or in_type == 'float':
       item = input(f'{in_message}(max {max_number}): ')
     else:
       item = input(f'{in_message}: ')
@@ -424,6 +424,8 @@ def input_single(
     prCyanMulti('You entered ', item)
   if in_type == 'int':
     return int(item)
+  elif in_type == 'float':
+    return float(item)
   else:
     return item
 
@@ -434,6 +436,7 @@ def validate_input(
   ):
   """
   item = The data entered in the input field,
+  email, file, password, int, float, time
   in_type = The type of data it is suposed to be,
   max_number = the max number that can be ablied this if for int only.
   Takes the input and checks to see if it is 
@@ -467,7 +470,14 @@ def validate_input(
       return True
     except Exception:
       return False
-    
+  elif in_type == 'float':
+    try:
+      number = float(item)
+      if (number <=0) or (number > max_number):
+        return False
+      return True
+    except Exception:
+      return False
   else:
     return False
 

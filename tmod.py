@@ -37,7 +37,6 @@ def colors():
   'UNDERLINE' : '\033[4m',
   'END' : '\033[0m'
   }
-c = colors()
 
 # File I/O /////////////////////////////////////////
 def home_dir():
@@ -355,19 +354,24 @@ def mail(
     print(e)
 
 # Input functions
-def input_loop(
+def input_list(
   subject: str, 
   description: str,
-  in_type: str= 'email'
+  in_type: str = 'email',
+  outword: str = 'next'
   ):
   """
   subject = The subject of the input item,
   description = the description of the input item,
-  This would be use for a input item that you would
+  in_type = tthe type of input field. Choices are 
+  email, file, int, time, password
+  outward = This is the word used to present to the user
+  to stop adding more items.
+  This would be used for a input item that you would
   want to add to a list.
   Requires: doesn't require any special imports
   """
-  outword = 'next'
+  c = colors()
   print(
     f'\n{c["PURPLE"]}{c["BOLD"]}'
     f'{subject.capitalize()}{c["END"]}\n'
@@ -422,10 +426,11 @@ def input_single(
   """
   in_message = the message you want in your input string,
   in_type = the type of input field. Choices are 
-  email, file, int, time
+  email, file, int, time, password
   This is for a single item input. This uses "validate_input"
   to verify that items entered meet requirements for that type of input
   """
+  c = colors()
   if in_type == 'int' or in_type == 'float':
     item = input(f'{in_message}(Max {max_number}): ')
   else:
@@ -511,6 +516,7 @@ def config_setup(conf_dir: str):
   setup configuration file. Sets up username 
   and password for email notifications
   """
+  c = colors()
   home = home_dir()
   make_dir(conf_dir)
 
@@ -564,11 +570,11 @@ def config_setup(conf_dir: str):
     in_type = 'int',
     max_number = 400
     )
-  send_list = input_loop(
+  send_list = input_list(
     subject= "email address",
     description = 'to send to (example@gmail.com)',
     in_type = 'email')
-  log_list = input_loop(
+  log_list = input_list(
     subject= "log file",
     description = 'to check relative to your home dir (Example: Logs/net_backup.log)',
     in_type = 'file'

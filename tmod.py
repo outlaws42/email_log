@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # -*- coding: utf-8 -*-
-version = '2021-04-27'
+version = '2021-04-30'
 
 # Imports included with python
 import os
@@ -22,6 +22,22 @@ try:
   from cryptography.fernet import Fernet
 except:
   pass
+
+# colors 
+def colors():
+  return {
+  'PURPLE' : '\033[95m',
+  'CYAN' : '\033[96m',
+  'DARKCYAN' : '\033[36m',
+  'BLUE'  : '\033[94m',
+  'GREEN' : '\033[92m',
+  'YELLOW' : '\033[93m',
+  'RED' : '\033[91m',
+  'BOLD' : '\033[1m',
+  'UNDERLINE' : '\033[4m',
+  'END' : '\033[0m'
+  }
+c = colors()
 
 # File I/O /////////////////////////////////////////
 def home_dir():
@@ -338,29 +354,6 @@ def mail(
     print('Could not send email because')
     print(e)
 
-# colors 
-def prRedMulti(ntext,text): print(f"{ntext}\033[91m \033[1m{text}\033[00m")
-def prCyanMulti(ntext,text): print(f"{ntext}\033[96m {text}\033[00m")
-def prCyanMultiB(ntext,text): print(f"{ntext}\033[96m \033[1m{text}\033[00m")
-
-def prRedBold(text): print(f"\033[91m \033[1m{text}\033[00m")
-def prGreenBold(text): print(f"\033[92m \033[1m{text}\033[00m")
-def prYellowBold(text): print(f"\033[93m \033[1m{text}\033[00m")
-def prLightPurpleBold(text): print(f"\033[94m \033[1m{text}\033[00m")
-def prPurpleBold(text): print(f"\033[95m \033[1m{text}\033[00m")
-def prCyanBold(text): print(f"\033[96m \033[1m{text}\033[00m")
-def prLightGrayBold(text): print(f"\033[97m \033[1m{text}\033[00m")
-def prBlackBold(text): print(f"\033[98m \033[1m{text}\033[00m")
-
-def prRed(text): print(f"\033[91m {text}\033[00m")
-def prGreen(text): print(f"\033[92m {text}\033[00m")
-def prYellow(text): print(f"\033[93m {text}\033[00m")
-def prLightPurple(text): print(f"\033[94m {text}\033[00m")
-def prPurple(text): print(f"\033[95m {text}\033[00m")
-def prCyan(text): print(f"\033[96m {text}\033[00m")
-def prLightGray(text): print(f"\033[97m {text}\033[00m")
-def prBlack(text): print(f"\033[98m {text}\033[00m")
-
 # Input functions
 def input_loop(
   subject: str, 
@@ -370,30 +363,55 @@ def input_loop(
   """
   subject = The subject of the input item,
   description = the description of the input item,
-  This would be used for a input item that you would
+  This would be use for a input item that you would
   want to add to a list.
   Requires: doesn't require any special imports
   """
-  prPurpleBold(f'\n{subject.capitalize()}')
-  print(f'You can add as many items as you like.')
-  prRedMulti('When your done adding, Type', 'exit')
+  outword = 'next'
+  print(
+    f'\n{c["PURPLE"]}{c["BOLD"]}'
+    f'{subject.capitalize()}{c["END"]}\n'
+    f'You can add as many items as you like.\n'
+    f'But you must add at least 1 item.\n'
+    f'When your done adding, Type ' 
+    f'{c["RED"]}{c["BOLD"]}{outword}{c["END"]}\n'
+  )
   item_list = []
   while True:
     item: str = input(f"Enter the {subject} {description}: ")
     while (validate_input(item, in_type) == False):
-      if (item == 'exit') or (item == 'Exit') or (item == 'EXIT'):
+      if ((
+        item == outword or 
+        item == outword.capitalize() or 
+        item == outword.upper()) and 
+        len(item_list) != 0
+      ):
         break
-      prRedBold(f'This is not a valid {in_type}')
+      if item == outword or item == outword.capitalize() or item == outword.upper():
+        print(
+          f'{c["RED"]}{c["BOLD"]}You need to enter at least 1 ' 
+          f'{in_type}{c["END"]}')
+      else:
+        print(
+          f'{c["RED"]}{c["BOLD"]}This is not a valid ' 
+          f'{in_type}{c["END"]}')
       item: str = input(f"Enter the {subject} {description}: ")
-    if (item == 'exit') or (item == 'Exit') or (item == 'EXIT'):
+    if ((
+      item == outword or 
+      item == outword.capitalize() or 
+      item == outword.upper()) and
+      len(item_list) != 0
+      ):
       length = len(item_list)
-      prRedMulti(f'\nYou have added {length} item(s), Because you typed', item)
-      print(f'That will complete your selection for {subject}.')
+      print(
+        f'\nYou have added {length} item(s), ' 
+        f'Because you typed {c["RED"]}{c["BOLD"]}{item}{c["END"]}\n'
+        f'That will complete your selection for "{subject.capitalize()}".')
       break
     else:
-      prCyanMulti(f'You added ', item)
+      print(f'You added {c["CYAN"]}{item}{c["END"]}')
       item_list.append(item)
-    prCyan(item_list)
+    print(f'{c["CYAN"]}{item_list}{c["END"]}')
   return item_list
 
 def input_single(
@@ -413,15 +431,17 @@ def input_single(
   else:
    item = input(f'{in_message}: ')
   while (validate_input(item, in_type, max_number) == False):
-    prRedBold(f'This is not a valid {in_type}')
+    print(
+      f'{c["RED"]}{c["BOLD"]}'
+      f'This is not a valid {in_type}{c["END"]}')
     if in_type == 'int' or in_type == 'float':
       item = input(f'{in_message}(max {max_number}): ')
     else:
       item = input(f'{in_message}: ')
   if in_type == 'password':
-    prCyan(f'******')
+    print(f'{c["CYAN"]}******{c["END"]}')
   else:
-    prCyanMulti('You entered ', item)
+    print(f'You entered {c["CYAN"]}{item}{c["END"]}')
   if in_type == 'int':
     return int(item)
   elif in_type == 'float':
@@ -494,17 +514,18 @@ def config_setup(conf_dir: str):
   home = home_dir()
   make_dir(conf_dir)
 
-  no_config = ('\nWe could not find any ' 
-  'configuration folder')
-  intr_desc1 = ('This Wizard will ask some questions ' 
-  'to setup the configuration needed for the script to function.')
-  intr_desc2 = ('This configuration wizard will only run once.')
-  intr_desc3 = ('\nThe first 2 questions are going ' 
-  'to be about your email and password you are using to send. '
-  '\nThis login information will be stored on your local ' 
-  'computer encrypted seperate '
-  '\nfrom the rest of the configuration. ' 
-  'This is not viewable by browsing the filesystem'
+  print(
+    f'\n{c["YELLOW"]}{c["BOLD"]}We could not find any ' 
+    f'configuration folder{c["END"]}'
+    f'\n{c["GREEN"]}This Wizard will ask some questions ' 
+    f'to setup the configuration needed for the script to function.{c["END"]}'
+    f'\n{c["GREEN"]}{c["BOLD"]}This configuration wizard will only run once.{c["END"]}\n'
+    f'\n{c["GREEN"]}The first 2 questions are going ' 
+    f'to be about your email and password you are using to send. '
+    f'\nThis login information will be stored on your local ' 
+    f'computer encrypted seperate '
+    f'\nfrom the rest of the configuration. ' 
+    f'This is not viewable by browsing the filesystem{c["END"]}'
   )
 
   gen_key(f'{conf_dir}/.info.key')
@@ -513,10 +534,6 @@ def config_setup(conf_dir: str):
       fdest = "home",
       mode ="rb"
       )
-  prYellowBold(no_config)
-  prGreen(intr_desc1)
-  prGreenBold(intr_desc2)
-  prGreen(intr_desc3)
 
   email = input_single(
     in_message = "\nEnter your email",
@@ -566,8 +583,13 @@ def config_setup(conf_dir: str):
     fname =f'{conf_dir}/emailog_set.yaml',
     fdest = 'home',
     content = load)
-  prYellowBold('\nThis completes the wizard')
-  print('The configuration file has been written to disk')
-  prCyanMultiB('If you want to change the settings you can edit', f'{home}/{conf_dir}/emailog_set.yaml')
-  prGreenBold("This wizard won't run any more, So the script can now be run automatically\n")
-  prCyanBold("You can stop the script by typing Ctrl + C\n")
+  print(
+    f'\n{c["YELLOW"]}{c["BOLD"]}This completes the wizard{c["END"]}'
+    f'\nThe configuration file has been written to disk'
+    f'\nIf you want to change the settings you can edit ' 
+    f'{c["CYAN"]}{c["BOLD"]}{home}/{conf_dir}/emailog_set.yaml{c["END"]}'
+    f'\n{c["GREEN"]}{c["BOLD"]}This wizard ' 
+    f'won\'t run any more, So the script can ' 
+    f'now be run automatically{c["END"]}\n'
+    f'\n{c["CYAN"]}{c["BOLD"]}You can stop ' 
+    f'the script by typing Ctrl + C{c["END"]}\n')

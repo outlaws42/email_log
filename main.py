@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-version = '2021-04-27'
+version = '2021-05-01'
 
 from tmod import (
   config_setup, open_file, 
@@ -55,14 +55,21 @@ def  call_funtion():
 def mail_body(filename, lines):
   age =  check_file_age(filename, 'home')
   if age >= 24:
-    con = f"The log file {filename} for {username} is {age} hours old check backup"
+    con = (
+      f"The log file {filename} for " 
+      f"{username} is {age} hours old check backup")
   else:
-    con = last_n_lines(filename, lines,'home')
+    fcon = last_n_lines(
+      fname = filename, 
+      lines=lines,
+      fdest = "home"
+      )
+    con = f'File age: {age} hours \n{fcon}'
   return con
 
 dir_exist = check_dir(conf_dir)
 if dir_exist == False:
-  config_setup(conf_dir)  
+  config_setup(conf_dir)
 every().day.at(str(runtime())).do(call_funtion)
 
 if __name__ == "__main__":

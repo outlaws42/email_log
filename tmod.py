@@ -140,20 +140,20 @@ def open_yaml(
     try:
         if fdest == 'home' or fdest == 'Home':
             with open(f'{home}/{fname}', 'r') as fle:
-                    content = yaml.full_load(fle)
+                    content = yaml.safe_load(fle)
             return content
         else:
             with open(get_resource_path(fname), 'r') as fle:
-                    content = yaml.full_load(fle)
+                    content = yaml.safe_load(fle)
             return content
     except(FileNotFoundError, EOFError) as e:
         print(e)
         if fdest == 'home' or fdest == 'Home':
             with open(f'{home}/{fname}', 'w') as output:
-                yaml.dump(def_content,output, sort_keys=True)
+                yaml.safe_dump(def_content,output, sort_keys=True)
         else:
             with open(get_resource_path(fname), 'w') as output:
-                yaml.dump(def_content,output, sort_keys=True)
+                yaml.safe_dump(def_content,output, sort_keys=True)
         return def_content
               
 def check_dir(
@@ -599,3 +599,4 @@ def config_setup(conf_dir: str):
     f'now be run automatically{c["END"]}\n'
     f'\n{c["CYAN"]}{c["BOLD"]}You can stop ' 
     f'the script by typing Ctrl + C{c["END"]}\n')
+

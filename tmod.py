@@ -91,7 +91,8 @@ def save_file(
     mode: str = 'w'):
     """
     fname = filename, content = what to save to the file, 
-    fdest = where to save file, mode = w for write or a for append
+    fdest = where to save file, 
+    mode = w for write or a for append
     import os
     """
     home = home_dir()

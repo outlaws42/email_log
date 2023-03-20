@@ -20,13 +20,13 @@ from re import search
 try:
     # pip install pyyaml if needed
     import yaml
-except FileNotFoundError:
+except ModuleNotFoundError:
     pass
 
 try:
     # pip install cryptography if needed
     from cryptography.fernet import Fernet
-except FileNotFoundError:
+except ModuleNotFoundError:
     pass
 
 __author__ = "Troy Franks"

@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-version = "2023-03-19"
+
+"""
+This creates a copy of a log file with only the last so many lines for sending
+for sending with notifications.
+"""
 
 # Imports
+from getpass import getuser
+
+# Personal Imports
 from tmod import (
     config_setup,
     open_file,
@@ -13,7 +20,9 @@ from tmod import (
     mail,
     check_dir,
 )
-from getpass import getuser
+
+__author__ = "Troy Franks"
+__version__ = "2023-03-20"
 
 # Global Variables
 username = getuser()
@@ -28,13 +37,12 @@ def get_config():
     return settings
 
 
-def create_file():
-    config = get_config()
+def create_file(config_setting):
+    config = config_setting
     logs = config["logs"]
     lines = config["lines"]
 
     for i in range(len(logs)):
-        print(logs[i])
         body = file_body(filename=logs[i], lines=lines)
         save_file(
             fname=f"{logs[i]}.txt",
@@ -60,8 +68,10 @@ def file_body(
             lines=lines,
             fdest="home",
         )
-        body = f"File age: {age} hours \n{truncated_file}"
+        body = f"File age: {age} hours for user {username}\n{truncated_file}"
     return body
 
 
-create_file()
+if __name__ == "__main__":
+    config = get_config()
+    create_file(config)
